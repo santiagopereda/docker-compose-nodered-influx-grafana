@@ -1,0 +1,25 @@
+{
+    "name": "node-red-project",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "node-red": "1.3.5",
+        "@influxdata/influxdb-client": "^1.14.0",
+        "compactcom-40-nodes": "~1.0.1",
+        "node-red-contrib-aedes": "~0.5.2",
+        "node-red-contrib-boolean-logic": "0.0.3",
+        "node-red-contrib-calc": "~1.0.5",
+        "node-red-contrib-controltimer": "~0.1.0",
+        "node-red-contrib-influxdb": "~0.6.1",
+        "node-red-contrib-modbus": "~5.14.0",
+        "node-red-contrib-modbustcp": "~1.2.3",
+        "node-red-contrib-opcua": "~0.2.221",
+        "node-red-contrib-s7": "~3.0.0-beta.3",
+        "node-red-dashboard": "~2.29.1",
+        "node-red-node-ui-table": "~0.3.12"
+    },
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS --userDir=/data"
+    }
+}

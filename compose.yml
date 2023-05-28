@@ -5,14 +5,29 @@ version: "3.9"
 networks:
   default:
 
-########################### SERVICES
+    ########################### SERVICES
 services:
+  node-red:
+    image: node-red
+    build:
+      context: ./backend/node-red
+      dockerfile: dockerfile
+    container_name: nodered
+    environment:
+      - TZ=Europe/Amsterdam
+    ports:
+      - 1880:1880
+    networks:
+      - default
+    volumes:
+      - node-red-data:/data
+
   influxdb2:
     image: influxdb:2.7.1
     container_name: influxdb2
     env_file:
       - .env
-    entrypoint: ["./entrypoint.sh"]
+    entrypoint: [ "./entrypoint.sh" ]
     volumes:
       - influxdb_data:/var/lib/influxdb2:rw
     ports:
@@ -47,7 +62,7 @@ services:
     env_file:
       - .env
     volumes:
-      - chronograf_data:/var/lib/chronograf  
+      - chronograf_data:/var/lib/chronograf
     depends_on:
       influxdb2:
         condition: service_healthy
@@ -57,7 +72,31 @@ services:
       - default
     restart: unless-stopped
 
+  grafana:
+    image: grafana
+    build:
+      context: ./backend/grafana
+      dockerfile: dockerfile
+    container_name: grafana
+    env_file:
+      - .env
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./backend/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./backend/grafana/provisioning:/etc/grafana/provisioning
+      - ./backend/grafana/dashboards:/etc/grafana/dashboards
+    depends_on:
+      influxdb2:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    networks:
+      - default
+    restart: unless-stopped
+
 ########################### VOLUMES
 volumes:
   influxdb_data:
   chronograf_data:
+  grafana_data:
+  node-red-data:

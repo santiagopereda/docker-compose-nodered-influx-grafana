@@ -1,0 +1,8 @@
+FROM grafana/grafana:8.3.0
+
+# Add provisioning
+COPY ./provisioning /etc/grafana/provisioning
+# Add configuration file
+COPY ./grafana.ini /etc/grafana/grafana.ini
+# Add dashboard json files
+COPY ./dashboards /etc/grafana/dashboards
