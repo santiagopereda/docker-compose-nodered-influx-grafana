@@ -1,0 +1,63 @@
+---
+version: "3.9"
+
+########################### NETWORKS
+networks:
+  default:
+
+########################### SERVICES
+services:
+  influxdb2:
+    image: influxdb:2.7.1
+    container_name: influxdb2
+    env_file:
+      - .env
+    entrypoint: ["./entrypoint.sh"]
+    volumes:
+      - influxdb_data:/var/lib/influxdb2:rw
+    ports:
+      - 127.0.0.1:8086:8086
+    networks:
+      - default
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -f http://localhost:8086/ping"
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  telegraf:
+    image: telegraf:1.26
+    container_name: telegraf
+    env_file:
+      - .env
+    volumes:
+      - ./backend/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      influxdb2:
+        condition: service_healthy
+    networks:
+      - default
+    restart: unless-stopped
+
+  chronograf:
+    image: chronograf:1.10
+    container_name: chronograf
+    env_file:
+      - .env
+    volumes:
+      - chronograf_data:/var/lib/chronograf  
+    depends_on:
+      influxdb2:
+        condition: service_healthy
+    ports:
+      - 8087:8888
+    networks:
+      - default
+    restart: unless-stopped
+
+########################### VOLUMES
+volumes:
+  influxdb_data:
+  chronograf_data:
